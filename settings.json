@@ -1,0 +1,20 @@
+{
+  "model": "claude-fable-5[1m]",
+  "enableWorkflows": true,
+  "enabledPlugins": {
+    "swift-lsp@claude-plugins-official": true,
+    "codex@openai-codex": true
+  },
+  "extraKnownMarketplaces": {
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    }
+  },
+  "effortLevel": "high",
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
+  "editorMode": "normal"
+}
