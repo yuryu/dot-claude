@@ -1,5 +1,10 @@
 {
   "model": "claude-fable-5[1m]",
+  "permissions": {
+    "allow": [
+      "Bash(~/.claude/scripts/pr-review.sh:*)"
+    ]
+  },
   "enableWorkflows": true,
   "enabledPlugins": {
     "swift-lsp@claude-plugins-official": true,
