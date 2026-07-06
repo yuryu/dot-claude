@@ -15,7 +15,8 @@ link() {
   if [ -L "${dst}" ]; then
     rm "${dst}"
   elif [ -e "${dst}" ]; then
-    local bak="${dst}.bak.$(date +%Y%m%d%H%M%S)"
+    local bak
+    bak="${dst}.bak.$(date +%Y%m%d%H%M%S)"
     echo "warn: ${dst} exists; backing up to ${bak}"
     mv "${dst}" "${bak}"
   fi
