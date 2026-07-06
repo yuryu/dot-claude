@@ -67,7 +67,7 @@ pushable from here by SHA. For each report:
    PR rather than force-pushing.
 2. Post each draft reply: `~/.claude/scripts/pr-review.sh reply <PR>
    <comment-id>` with the body on stdin — the script appends the
-   `*— written by Claude*` attribution line itself.
+   `🤖 Generated with Claude Code` attribution line itself.
 3. Resolve the threads whose fix landed, after the push:
    `~/.claude/scripts/pr-review.sh threads <PR>` maps comment ids to
    thread ids, then `~/.claude/scripts/pr-review.sh resolve <thread-id>`

@@ -14,8 +14,10 @@
 #     outside any repository — so a checked-out PR branch cannot shadow or
 #     tamper with it. The Bash allowlist trusts this path.
 #   - Every argument is validated against a strict pattern before use.
-#   - Comment/reply bodies are read from stdin and the "*— written by Claude*"
-#     attribution line is appended automatically (never forgotten, never doubled).
+#   - Comment/reply bodies are read from stdin and the "🤖 Generated with
+#     Claude Code" attribution line is appended automatically (never
+#     forgotten, never doubled). The gh-attribution-hook.sh PreToolUse hook
+#     exempts this script for exactly that reason.
 #   - `push` refuses main/master and the repo's actual default branch, requires
 #     the commit to exist locally, and never force-pushes (a non-fast-forward
 #     is rejected by the server).
@@ -25,7 +27,10 @@
 #        (run from inside a clone of the target repo)
 set -euo pipefail
 
-ATTRIBUTION='*— written by Claude*'
+ATTRIBUTION='🤖 Generated with Claude Code'
+# The markdown-link form Claude Code's own conventions append to PR bodies.
+# read_body treats a body ending in either form as already attributed.
+ATTRIBUTION_MD='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 
 # Every subcommand (read or write) refuses to run unless origin points at a
 # repo under this owner on github.com. This bounds the blast radius of every
@@ -116,7 +121,9 @@ read_body() {
   # Suffix match, not "contains": a body that merely quotes an earlier reply's
   # attribution line mid-text still needs its own trailing one. $(cat) has
   # already stripped trailing newlines, so *"$ATTRIBUTION" means "ends with it".
-  if [[ "$body" == *"$ATTRIBUTION" ]]; then
+  # Either footer form counts, so a body Claude already ended with the
+  # markdown-link variant doesn't get a second plain footer appended.
+  if [[ "$body" == *"$ATTRIBUTION" || "$body" == *"$ATTRIBUTION_MD" ]]; then
     printf '%s\n' "$body"
   else
     printf '%s\n\n%s\n' "$body" "$ATTRIBUTION"
@@ -128,6 +135,7 @@ read_body() {
 # the window too, so a long-lived PR's newest unresolved threads can sit beyond
 # it). author is null for a deleted account; callers guard test() with `// ""`.
 unresolved_threads() {
+  # shellcheck disable=SC2016 # $vars in the single-quoted query are GraphQL variables, not shell
   gh api graphql --paginate \
     -f owner="$REPO_OWNER" -f repo="$REPO_NAME" -F pr="$1" -f query='
     query($owner:String!,$repo:String!,$pr:Int!,$endCursor:String){
@@ -228,6 +236,7 @@ cmd_pr_comment() {
 
 cmd_resolve() {
   [[ "${1:-}" =~ ^[A-Za-z0-9_=+/-]+$ ]] || die "malformed thread id '${1:-}'"
+  # shellcheck disable=SC2016 # $id in the single-quoted query is a GraphQL variable, not shell
   gh api graphql -f id="$1" -f query='
     mutation($id:ID!){ resolveReviewThread(input:{threadId:$id}){ thread{ isResolved } } }'
 }

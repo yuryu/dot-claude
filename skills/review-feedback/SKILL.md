@@ -70,7 +70,7 @@ group:
 
 Reply either way — "Applied in `<sha>`" or the reason you declined — so
 nothing is silently ignored. Pass the body on stdin; the script appends
-the `*— written by Claude*` attribution line automatically:
+the `🤖 Generated with Claude Code` attribution line automatically:
 
 ```sh
 ~/.claude/scripts/pr-review.sh reply <PR> <comment-id> <<'EOF'

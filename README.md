@@ -21,7 +21,9 @@ Creates the symlinks above. Existing symlinks are replaced; existing real
 files are backed up to `<name>.bak.<timestamp>` first.
 
 `CLAUDE.md` at the repo root is not linked anywhere — it holds project
-instructions for working on this repo itself.
+instructions for working on this repo itself. Likewise `tests/`: it holds
+tests for the scripts (run them directly, e.g.
+`tests/gh-attribution-hook.test.sh`).
 
 Machine-local state (`settings.local.json`, `~/.claude.json`, caches,
 history) is deliberately not tracked.
