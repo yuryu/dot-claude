@@ -8,8 +8,9 @@ mkdir -p "${CLAUDE_DIR}"
 
 link() {
   local name="$1"
+  local dst_name="${2:-$1}"
   local src="${REPO_DIR}/${name}"
-  local dst="${CLAUDE_DIR}/${name}"
+  local dst="${CLAUDE_DIR}/${dst_name}"
 
   if [ -L "${dst}" ]; then
     rm "${dst}"
@@ -23,7 +24,7 @@ link() {
   echo "linked ${dst} -> ${src}"
 }
 
-link CLAUDE.md
+link CLAUDE.global.md CLAUDE.md
 link settings.json
 link skills
 link scripts
