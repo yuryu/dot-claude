@@ -1,6 +1,6 @@
 ---
 name: review-feedback
-description: Fetch bot review feedback (OpenAI Codex and GitHub Copilot) on a PR, address each comment, update the PR, and resolve the addressed threads. Works in any GitHub repo; targets the repo the clone's `origin` remote points to. Use when a PR has review comments from either bot to handle.
+description: Fetch bot review feedback (OpenAI Codex and GitHub Copilot) on a PR, address each comment, update the PR, and resolve the addressed threads. Works in any repo under github.com/yuryu; targets the repo the clone's `origin` remote points to. Use when a PR has review comments from either bot to handle.
 ---
 
 # Handle a PR's bot review feedback

@@ -1,6 +1,6 @@
 ---
 name: review-sweep
-description: Handle bot review feedback (Codex, Copilot) on multiple open PRs at once — fan out one worktree subagent per PR to apply fixes locally, then push, reply, and resolve threads from the orchestrating session. Works in any GitHub repo; targets the repo the clone's `origin` remote points to. Use when several PRs have review comments waiting.
+description: Handle bot review feedback (Codex, Copilot) on multiple open PRs at once — fan out one worktree subagent per PR to apply fixes locally, then push, reply, and resolve threads from the orchestrating session. Works in any repo under github.com/yuryu; targets the repo the clone's `origin` remote points to. Use when several PRs have review comments waiting.
 ---
 
 # Sweep review feedback across open PRs

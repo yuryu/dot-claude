@@ -8,6 +8,8 @@
 #     caller-supplied owner/repo ever reaches gh. Every gh call pins --repo
 #     explicitly, so gh's own remote inference (which can resolve to a fork)
 #     is never trusted.
+#   - The derived repo must live under github.com/yuryu (ALLOWED_OWNER), so
+#     the script cannot operate on anyone else's repository at all.
 #   - This script lives at ~/.claude/scripts/pr-review.sh — a fixed path
 #     outside any repository — so a checked-out PR branch cannot shadow or
 #     tamper with it. The Bash allowlist trusts this path.
@@ -25,6 +27,12 @@ set -euo pipefail
 
 ATTRIBUTION='*— written by Claude*'
 
+# Every subcommand (read or write) refuses to run unless origin points at a
+# repo under this owner on github.com. This bounds the blast radius of every
+# write to repos the user owns — notably `resolve`, whose GraphQL thread IDs
+# are global and could otherwise touch any repo the token can reach.
+ALLOWED_OWNER='yuryu'
+
 # Bot logins differ per API surface. The patterns are fully anchored so a
 # registrable look-alike login (e.g. "chatgpt-codex-connector2") can't be
 # mistaken for a bot and have its text treated as trusted review feedback.
@@ -37,7 +45,8 @@ BOTS_REST='^(Copilot|chatgpt-codex-connector\[bot\])$'
 usage() {
   cat <<'EOF'
 Usage: ~/.claude/scripts/pr-review.sh <subcommand> [args]
-       (run from inside a clone; targets the repo `origin` points to)
+       (run from inside a clone; targets the repo `origin` points to,
+        which must be under github.com/yuryu)
 
 Read-only:
   current-pr                     PR number of the current branch
@@ -85,6 +94,14 @@ derive_repo() {
     die "cannot parse owner/repo from origin URL '$origin_url'"
   fi
   REPO="$REPO_OWNER/$REPO_NAME"
+  # Match the host exactly (anchored forms only), so e.g. evil-github.com or
+  # github.com.evil.example can't pass; then pin the owner.
+  case "$origin_url" in
+    git@github.com:*|ssh://git@github.com/*|https://github.com/*|http://github.com/*) ;;
+    *) die "origin '$origin_url' is not on github.com — refusing" ;;
+  esac
+  [[ "$REPO_OWNER" == "$ALLOWED_OWNER" ]] \
+    || die "origin repo $REPO is not under github.com/$ALLOWED_OWNER — refusing"
 }
 
 require_pr() {
